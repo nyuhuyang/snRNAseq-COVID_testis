@@ -1,0 +1,18 @@
+library(kableExtra)
+Spermatogonia <- c("GFRA1","ZBTB16","SALL4","DMRT1","ID4", "UCHL1", "L1TD1", "FMR1", "ZBTB43", "NR6A1", "BEND4", "DMRT1", "MORC1", "DAZL", "SYCP3")
+Spermatocytes <- c("DAZL","KIT","CDCA8","ID4","SYCP3","TESMIN","NXT1","SHCBP1L","AURKA")
+Round_Spermatids <- c("LYZL1","ACRV1","HEMGN")
+Spermatids <- c("TXNDC8","TSSK6","OAZ3","PRM2")
+Smooth_muscle <- c("COL1A2","ACTA2")
+B_cells <- c("CD19","MS4A1")
+T_cells <- c("CD3G","CD3D","CD3E","CD4","CD8A")
+NK_cells <- c("GNLY","NKG7","GZMA","NCAM1")
+Monocytes <- c("CD14","VCAN","FCGR3A","FCGR3B","FCN1","S100A8")
+Endothelial_cells <- c("VWF","CLDN5","CDH5","PECAM1","SELE","FLT1")
+Epithelial_cells <- c("KRT19","EPCAM","LGR5","BMI1")
+Sertoli_markers <- c("PTGDS","WT1","MRO","SOX9","AMH","DHH")
+
+marker = unique(c(Spermatogonia,Spermatocytes,Round_Spermatids,Spermatids,Smooth_muscle,
+                  B_cells,T_cells,NK_cells,Monocytes,Endothelial_cells,Epithelial_cells,Sertoli_markers))
+marker %<>% toupper()
+marker %>% kable %>% kable_styling()
