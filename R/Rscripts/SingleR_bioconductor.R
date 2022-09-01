@@ -7,6 +7,15 @@ library(magrittr)
 source("https://raw.githubusercontent.com/nyuhuyang/SeuratExtra/master/R/Seurat4_functions.R")
 source("https://raw.githubusercontent.com/nyuhuyang/SeuratExtra/master/R/SingleR_functions.R")
 
+# Need 64GB ?
+set.seed(101)
+# SLURM_ARRAY_TASK_ID
+slurm_arrayid <- Sys.getenv('SLURM_ARRAY_TASK_ID')
+if (length(slurm_arrayid)!=1)  stop("Exact one argument must be supplied!")
+# coerce the value to an integer
+args <- as.integer(as.character(slurm_arrayid))
+print(paste0("slurm_arrayid=",args))
+
 # ====== load single cell =============
 
 object = readRDS("data/COVID_testis_10_SCT_20220421.rds")
@@ -14,7 +23,12 @@ sce <- SingleCellExperiment(list(logcounts=object[["SCT"]]@data),
                             colData=DataFrame(object@meta.data))
 rm(object);GC()
 
-references = c("blue_encode","KJGrive2019+PBMC","Shami2020","GuoJ2018","GuoJ2018+PBMC")[4]
+references = c("blue_encode",
+               "KJGrive2019+PBMC",
+               "Shami2020",
+               "Shami2020+PBMC",
+               "GuoJ2018",
+               "GuoJ2018+PBMC")[args]
 
 
 # ====== load reference =============
@@ -203,6 +217,7 @@ if(references == "GuoJ2018"){
     system.time(pred <- classifySingleR(sce[common,], trained))
     saveRDS(object = pred, file = "output/COVID_testis_10_20220421_GuoJ2018_singleR_pred.rds")
 }
+
 if(references == "GuoJ2018+PBMC"){
     counts = data.table::fread("data/GSE112013/GSE112013_Combined_UMI_table.txt.gz")
     counts %<>% as.data.frame() %>% tibble::column_to_rownames("Gene") 
