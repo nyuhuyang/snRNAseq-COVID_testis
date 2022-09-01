@@ -14,7 +14,7 @@ sce <- SingleCellExperiment(list(logcounts=object[["SCT"]]@data),
                             colData=DataFrame(object@meta.data))
 rm(object);GC()
 
-references = c("blue_encode","KJGrive2019+PBMC","Shami2020")[3]
+references = c("blue_encode","KJGrive2019+PBMC","Shami2020","GuoJ2018","GuoJ2018+PBMC")[4]
 
 
 # ====== load reference =============
@@ -143,5 +143,134 @@ if(references == "Shami2020+PBMC"){
                                         labels=SSC_PBMC$celltype.l3))
     system.time(pred <- classifySingleR(sce[common,], trained))
     saveRDS(object = pred, file = "output/COVID_testis_10_20220421_Shami2020_PBMC_singleR_pred.rds")
+}
+
+if(references == "GuoJ2018"){
+    counts = data.table::fread("data/GSE112013/GSE112013_Combined_UMI_table.txt.gz")
+    counts %<>% as.data.frame() %>% tibble::column_to_rownames("Gene") 
+    counts %<>% as.matrix %>% Matrix::Matrix(sparse = TRUE)
+    
+    library(pdftools)
+    meta.data <- pdf_text("https://static-content.springer.com/esm/art%3A10.1038%2Fs41422-018-0099-2/MediaObjects/41422_2018_99_MOESM9_ESM.pdf")
+    meta.data %<>% lapply(function(x) strsplit(x, split = "\\n")[[1]])
+    Colnames <- strsplit(meta.data[[1]][2],split = " ")[[1]]
+    meta.data[[1]] = meta.data[[1]][3:length(meta.data[[1]])]
+    meta.data %<>% lapply(function(tmp) {
+        tmp %<>% lapply(function(x) t(as.data.frame(strsplit(x,split = " ")[[1]]))) %>%
+            do.call("rbind",.)
+    })  %>%
+        do.call("rbind",.)
+    meta.data %<>% as.data.frame()
+    colnames(meta.data) = Colnames
+    rownames(meta.data) = meta.data$CellID
+    
+    meta.data$Final_clusters %<>% as.integer()
+    meta.data$celltype.l2 <- plyr::mapvalues(meta.data$Final_clusters,
+                                             from = 1:13,
+                                             to = c("SSCs",
+                                                    "Differentiating Spermatogonia",
+                                                    "Early primary Spermatocyes",
+                                                    "Late primary Spermatocyes",
+                                                    "Round Spermatotids",
+                                                    "Elongated Spermatotids",
+                                                    "Sperm",
+                                                    "Sperm",
+                                                    "Macrophages",
+                                                    "Endothelial cells",
+                                                    "Myloid sells",
+                                                    "Sertoli cells",
+                                                    "Leydig cells"
+                                                    ))
+    #saveRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
+    meta.data = readRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
+    
+    table(colnames(counts) == rownames(meta.data))
+    SSCs = CreateSeuratObject(counts,min.cells = 0,names.delim = "-",min.features = 0,meta.data = meta.data)
+    SSCs %<>% NormalizeData()
+    SSC_sce <- SingleCellExperiment(list(logcounts=SSCs[["RNA"]]@data),
+                                    colData=DataFrame(SSCs@meta.data))
+    rm(SSCs);GC()
+    
+    #rownames(SSC_sce) %<>% toupper()
+    common <- Reduce(intersect, list(rownames(sce),
+                                     rownames(SSC_sce)
+    ))
+    length(common)
+    
+    table(SSC_sce$celltype.l2)
+    system.time(trained <- trainSingleR(ref = SSC_sce[common,],
+                                        labels=SSC_sce$celltype.l2))
+    system.time(pred <- classifySingleR(sce[common,], trained))
+    saveRDS(object = pred, file = "output/COVID_testis_10_20220421_GuoJ2018_singleR_pred.rds")
+}
+if(references == "GuoJ2018+PBMC"){
+    counts = data.table::fread("data/GSE112013/GSE112013_Combined_UMI_table.txt.gz")
+    counts %<>% as.data.frame() %>% tibble::column_to_rownames("Gene") 
+    counts %<>% as.matrix %>% Matrix::Matrix(sparse = TRUE)
+    
+    library(pdftools)
+    meta.data <- pdf_text("https://static-content.springer.com/esm/art%3A10.1038%2Fs41422-018-0099-2/MediaObjects/41422_2018_99_MOESM9_ESM.pdf")
+    meta.data %<>% lapply(function(x) strsplit(x, split = "\\n")[[1]])
+    Colnames <- strsplit(meta.data[[1]][2],split = " ")[[1]]
+    meta.data[[1]] = meta.data[[1]][3:length(meta.data[[1]])]
+    meta.data %<>% lapply(function(tmp) {
+        tmp %<>% lapply(function(x) t(as.data.frame(strsplit(x,split = " ")[[1]]))) %>%
+            do.call("rbind",.)
+    })  %>%
+        do.call("rbind",.)
+    meta.data %<>% as.data.frame()
+    colnames(meta.data) = Colnames
+    rownames(meta.data) = meta.data$CellID
+    
+    meta.data$Final_clusters %<>% as.integer()
+    meta.data$celltype.l2 <- plyr::mapvalues(meta.data$Final_clusters,
+                                             from = 1:13,
+                                             to = c("SSCs",
+                                                    "Differentiating Spermatogonia",
+                                                    "Early primary Spermatocyes",
+                                                    "Late primary Spermatocyes",
+                                                    "Round Spermatotids",
+                                                    "Elongated Spermatotids",
+                                                    "Sperm",
+                                                    "Sperm",
+                                                    "Macrophages",
+                                                    "Endothelial cells",
+                                                    "Myloid sells",
+                                                    "Sertoli cells",
+                                                    "Leydig cells"
+                                             ))
+    #saveRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
+    meta.data = readRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
+    table(colnames(counts) == rownames(meta.data))
+    SSCs = CreateSeuratObject(counts,min.cells = 0,names.delim = "-",min.features = 0,meta.data = meta.data)
+    SSCs %<>% NormalizeData()
+    SSC_sce <- SingleCellExperiment(list(logcounts=SSCs[["RNA"]]@data),
+                                    colData=DataFrame("celltype.l2" = meta.data$celltype.l2))
+    rm(SSCs);GC()
+    
+    # ======= load azimuth PBMC data ==============================
+    path = "../seurat_resources/azimuth/PBMC/"
+    counts <- Read10X(paste0(path, "GSE164378/GSM5008740_RNA_5P"))
+    libsizes <- colSums(counts)
+    size.factors <- libsizes/mean(libsizes)
+    meta.data = read.csv(paste0(path,"GSE164378/GSE164378_sc.meta.data_5P.csv"),row.names =1)
+    table(rownames(meta.data) == colnames(counts))
+    PBMC <- SingleCellExperiment(list(logcounts=log1p(t(t(counts)/size.factors))),
+                                 colData=DataFrame("celltype.l2" = meta.data$celltype.l2))
+    rm(counts);GC()
+    PBMC$celltype.l2 = PBMC$meta.data.celltype.l2
+    PBMC$meta.data.celltype.l2 = NULL
+    # ====== conbime data =============
+    common <- Reduce(intersect, list(rownames(sce),
+                                     rownames(SSC_sce),
+                                     rownames(PBMC)
+    ))
+    length(common)
+    SSC_PBMC <- cbind(SSC_sce[common,],PBMC[common,])
+    table(SSC_PBMC$celltype.l2)
+    system.time(trained <- trainSingleR(ref = SSC_PBMC[common,],
+                                        labels=SSC_PBMC$celltype.l2))
+    system.time(pred <- classifySingleR(sce[common,], trained))
+    saveRDS(object = pred, file = "output/COVID_testis_10_20220421_GuoJ2018_PBMC_singleR_pred.rds")
 }
 

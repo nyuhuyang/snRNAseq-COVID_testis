@@ -20,7 +20,7 @@ table(rownames(object@meta.data) == rownames(meta.data))
 object@meta.data = meta.data
 (step = c("resolutions")[1])
 
-if(step == "resolutions"){# 32GB
+if(step == "resolutions"){# 64GB
     opts = data.frame(ident = c(rep("SCT_snn_res.0.01",7),
                                 rep("SCT_snn_res.0.1",13),
                                 rep("SCT_snn_res.0.2",15),
