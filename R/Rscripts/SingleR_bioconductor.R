@@ -164,39 +164,39 @@ if(references == "GuoJ2018"){
     counts %<>% as.data.frame() %>% tibble::column_to_rownames("Gene") 
     counts %<>% as.matrix %>% Matrix::Matrix(sparse = TRUE)
     
-    library(pdftools)
-    meta.data <- pdf_text("https://static-content.springer.com/esm/art%3A10.1038%2Fs41422-018-0099-2/MediaObjects/41422_2018_99_MOESM9_ESM.pdf")
-    meta.data %<>% lapply(function(x) strsplit(x, split = "\\n")[[1]])
-    Colnames <- strsplit(meta.data[[1]][2],split = " ")[[1]]
-    meta.data[[1]] = meta.data[[1]][3:length(meta.data[[1]])]
-    meta.data %<>% lapply(function(tmp) {
-        tmp %<>% lapply(function(x) t(as.data.frame(strsplit(x,split = " ")[[1]]))) %>%
-            do.call("rbind",.)
-    })  %>%
-        do.call("rbind",.)
-    meta.data %<>% as.data.frame()
-    colnames(meta.data) = Colnames
-    rownames(meta.data) = meta.data$CellID
+    #library(pdftools)
+    #meta.data <- pdf_text("https://static-content.springer.com/esm/art%3A10.1038%2Fs41422-018-0099-2/MediaObjects/41422_2018_99_MOESM9_ESM.pdf")
+    #meta.data %<>% lapply(function(x) strsplit(x, split = "\\n")[[1]])
+    #Colnames <- strsplit(meta.data[[1]][2],split = " ")[[1]]
+    #meta.data[[1]] = meta.data[[1]][3:length(meta.data[[1]])]
+    #meta.data %<>% lapply(function(tmp) {
+    #    tmp %<>% lapply(function(x) t(as.data.frame(strsplit(x,split = " ")[[1]]))) %>%
+    #        do.call("rbind",.)
+    #})  %>%
+    #    do.call("rbind",.)
+    #meta.data %<>% as.data.frame()
+    #colnames(meta.data) = Colnames
+    #rownames(meta.data) = meta.data$CellID
     
-    meta.data$Final_clusters %<>% as.integer()
-    meta.data$celltype.l2 <- plyr::mapvalues(meta.data$Final_clusters,
-                                             from = 1:13,
-                                             to = c("SSCs",
-                                                    "Differentiating Spermatogonia",
-                                                    "Early primary Spermatocyes",
-                                                    "Late primary Spermatocyes",
-                                                    "Round Spermatotids",
-                                                    "Elongated Spermatotids",
-                                                    "Sperm",
-                                                    "Sperm",
-                                                    "Macrophages",
-                                                    "Endothelial cells",
-                                                    "Myloid sells",
-                                                    "Sertoli cells",
-                                                    "Leydig cells"
-                                                    ))
+    #meta.data$Final_clusters %<>% as.integer()
+    #meta.data$celltype.l2 <- plyr::mapvalues(meta.data$Final_clusters,
+    #                                         from = 1:13,
+    #                                         to = c("SSCs",
+    #                                                "Differentiating Spermatogonia",
+    #                                                "Early primary Spermatocyes",
+    #                                                "Late primary Spermatocyes",
+    #                                                "Round Spermatotids",
+    #                                                "Elongated Spermatotids",
+    #                                                "Sperm",
+    #                                                "Sperm",
+    #                                                "Macrophages",
+    #                                                "Endothelial cells",
+    #                                                "Myloid sells",
+    #                                                "Sertoli cells",
+    #                                                "Leydig cells"
+    #                                                ))
     #saveRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
-    meta.data = readRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
+    meta.data = readRDS("data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
     
     table(colnames(counts) == rownames(meta.data))
     SSCs = CreateSeuratObject(counts,min.cells = 0,names.delim = "-",min.features = 0,meta.data = meta.data)
@@ -223,37 +223,38 @@ if(references == "GuoJ2018+PBMC"){
     counts %<>% as.data.frame() %>% tibble::column_to_rownames("Gene") 
     counts %<>% as.matrix %>% Matrix::Matrix(sparse = TRUE)
     
-    library(pdftools)
-    meta.data <- pdf_text("https://static-content.springer.com/esm/art%3A10.1038%2Fs41422-018-0099-2/MediaObjects/41422_2018_99_MOESM9_ESM.pdf")
-    meta.data %<>% lapply(function(x) strsplit(x, split = "\\n")[[1]])
-    Colnames <- strsplit(meta.data[[1]][2],split = " ")[[1]]
-    meta.data[[1]] = meta.data[[1]][3:length(meta.data[[1]])]
-    meta.data %<>% lapply(function(tmp) {
-        tmp %<>% lapply(function(x) t(as.data.frame(strsplit(x,split = " ")[[1]]))) %>%
-            do.call("rbind",.)
-    })  %>%
-        do.call("rbind",.)
-    meta.data %<>% as.data.frame()
-    colnames(meta.data) = Colnames
-    rownames(meta.data) = meta.data$CellID
+    #library(pdftools)
+    #meta.data <- pdf_text("https://static-content.springer.com/esm/art%3A10.1038%2Fs41422-018-0099-2/MediaObjects/41422_2018_99_MOESM9_ESM.pdf")
+    #meta.data %<>% lapply(function(x) strsplit(x, split = "\\n")[[1]])
+    #Colnames <- strsplit(meta.data[[1]][2],split = " ")[[1]]
+    #meta.data[[1]] = meta.data[[1]][3:length(meta.data[[1]])]
+    #meta.data %<>% lapply(function(tmp) {
+    #    tmp %<>% lapply(function(x) t(as.data.frame(strsplit(x,split = " ")[[1]]))) %>%
+    #        do.call("rbind",.)
+    #})  %>%
+    #    do.call("rbind",.)
+    #meta.data %<>% as.data.frame()
+    #colnames(meta.data) = Colnames
+    #rownames(meta.data) = meta.data$CellID
     
-    meta.data$Final_clusters %<>% as.integer()
-    meta.data$celltype.l2 <- plyr::mapvalues(meta.data$Final_clusters,
-                                             from = 1:13,
-                                             to = c("SSCs",
-                                                    "Differentiating Spermatogonia",
-                                                    "Early primary Spermatocyes",
-                                                    "Late primary Spermatocyes",
-                                                    "Round Spermatotids",
-                                                    "Elongated Spermatotids",
-                                                    "Sperm",
-                                                    "Sperm",
-                                                    "Macrophages",
-                                                    "Endothelial cells",
-                                                    "Myloid sells",
-                                                    "Sertoli cells",
-                                                    "Leydig cells"
-                                             ))
+    #meta.data$Final_clusters %<>% as.integer()
+    #meta.data$celltype.l2 <- plyr::mapvalues(meta.data$Final_clusters,
+    #                                         from = 1:13,
+    #                                         to = c("SSCs",
+    #                                                "Differentiating Spermatogonia",
+    #                                                "Early primary Spermatocyes",
+    #                                                "Late primary Spermatocyes",
+    #                                                "Round Spermatotids",
+    #                                                "Elongated Spermatotids",
+    #                                                "Sperm",
+    #                                                "Sperm",
+    #                                                "Macrophages",
+    #                                                "Endothelial cells",
+    #                                                "Myloid sells",
+    #                                                "Sertoli cells",
+    #                                                "Leydig cells"
+    #                                                ))
+
     #saveRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
     meta.data = readRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
     table(colnames(counts) == rownames(meta.data))
