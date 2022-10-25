@@ -64,10 +64,9 @@ if(references == "KJGrive2019+PBMC"){
     meta.data = read.csv(paste0(path,"GSE164378/GSE164378_sc.meta.data_5P.csv"),row.names =1)
     table(rownames(meta.data) == colnames(counts))
     PBMC <- SingleCellExperiment(list(logcounts=log1p(t(t(counts)/size.factors))),
-                                 colData=DataFrame(meta.data$celltype.l3))
+                                 colData=DataFrame("celltype.l3" = meta.data$celltype.l3))
     rm(counts);GC()
-    PBMC$celltype.l3 = PBMC$meta.data.celltype.l3
-    PBMC$meta.data.celltype.l3 = NULL
+
     # ====== conbime data =============
     common <- Reduce(intersect, list(rownames(sce),
                                      rownames(SSC_sce),
@@ -125,10 +124,8 @@ if(references == "Shami2020+PBMC"){
     SSCs %<>% subset(CellType %in% c("Macrophage", "Myoid", "Tcell"), invert = T)
     SSCs$celltype.l3 = SSCs$CellType
     SSC_sce <- SingleCellExperiment(list(logcounts=SSCs[["RNA"]]@data),
-                                    colData=DataFrame(SSCs$celltype.l3))
-    SSC_sce$celltype.l3 = SSC_sce$SSCs.celltype.l3
-    SSC_sce$SSCs.celltype.l3 = NULL
-    
+                                    colData=DataFrame("celltype.l3" = SSCs$celltype.l3))
+
     rm(SSCs);GC()
     
     rownames(SSC_sce) %<>% toupper()
@@ -256,7 +253,7 @@ if(references == "GuoJ2018+PBMC"){
     #                                                ))
 
     #saveRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
-    meta.data = readRDS(meta.data, "data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
+    meta.data = readRDS("data/GSE112013/41422_2018_99_MOESM9_ESM_meta.data.rds")
     table(colnames(counts) == rownames(meta.data))
     SSCs = CreateSeuratObject(counts,min.cells = 0,names.delim = "-",min.features = 0,meta.data = meta.data)
     SSCs %<>% NormalizeData()
@@ -274,8 +271,6 @@ if(references == "GuoJ2018+PBMC"){
     PBMC <- SingleCellExperiment(list(logcounts=log1p(t(t(counts)/size.factors))),
                                  colData=DataFrame("celltype.l2" = meta.data$celltype.l2))
     rm(counts);GC()
-    PBMC$celltype.l2 = PBMC$meta.data.celltype.l2
-    PBMC$meta.data.celltype.l2 = NULL
     # ====== conbime data =============
     common <- Reduce(intersect, list(rownames(sce),
                                      rownames(SSC_sce),
